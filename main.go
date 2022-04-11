@@ -23,9 +23,9 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
-	"github.com/viewscreen/viewscreen/internal/downloader"
-	"github.com/viewscreen/viewscreen/internal/search"
-	"github.com/viewscreen/viewscreen/internal/transcoder"
+	"github.com/torch50city/viewscreen/internal/downloader"
+	"github.com/torch50city/viewscreen/internal/search"
+	"github.com/torch50city/viewscreen/internal/transcoder"
 
 	"github.com/eduncan911/podcast"
 	"github.com/julienschmidt/httprouter"
@@ -53,7 +53,7 @@ var (
 	version string
 
 	// torrent
-	torrentListenAddr string
+	torrentListenAddr func(network string) string
 
 	// reverse proxy authentication
 	reverseProxyAuthIP     string
@@ -134,7 +134,7 @@ func init() {
 	cli.StringVar(&httpHost, "http-host", "", "HTTP host")
 	cli.StringVar(&httpPrefix, "http-prefix", "/viewscreen", "HTTP URL prefix (not supported yet)")
 	cli.StringVar(&httpUsername, "http-username", "viewscreen", "HTTP basic auth username")
-	cli.StringVar(&torrentListenAddr, "torrent-addr", ":61337", "listen address for torrent client")
+	// cli.StringVar(torrentListenAddr(), "torrent-addr", ":61337", "listen address for torrent client")
 	cli.StringVar(&reverseProxyAuthIP, "reverse-proxy-ip", "", "reverse proxy auth IP")
 	cli.StringVar(&reverseProxyAuthHeader, "reverse-proxy-header", "X-Authenticated-User", "reverse proxy auth header")
 	cli.BoolVar(&showVersion, "version", false, "display version and exit")
@@ -1100,9 +1100,9 @@ func main() {
 	}()
 	// TLS
 	tlsConfig := tls.Config{
-		GetCertificate: certmanager.GetCertificate,
-		NextProtos:     []string{"http/1.1"}, // TODO: investigate any HTTP 2 issues.
-		Rand:           rand.Reader,
+		GetCertificate:           certmanager.GetCertificate,
+		NextProtos:               []string{"http/1.1"}, // TODO: investigate any HTTP 2 issues.
+		Rand:                     rand.Reader,
 		PreferServerCipherSuites: true,
 		MinVersion:               tls.VersionTLS12,
 		CipherSuites: []uint16{

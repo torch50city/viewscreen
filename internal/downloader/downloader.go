@@ -19,7 +19,7 @@ import (
 
 	"go.uber.org/zap"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/anacrolix/torrent"
 	"github.com/anacrolix/torrent/metainfo"
@@ -57,7 +57,7 @@ type Config struct {
 	Logger        *zap.SugaredLogger
 	Space         func() int64
 
-	TorrentAddr string
+	TorrentAddr func(network string) string
 
 	// mu protects the below, which can be accessed safely using getters/setters.
 	mu            sync.RWMutex
@@ -181,9 +181,9 @@ func NewDownloader(cfg *Config) (*Downloader, error) {
 	uprate := int((cfg.UploadSpeed * (1024 * 1024)) / 8)
 	downrate := int((cfg.DownloadSpeed * (1024 * 1024)) / 8)
 
-	client, err := torrent.NewClient(&torrent.Config{
+	client, err := torrent.NewClient(&torrent.ClientConfig{
 		DataDir:             cfg.DownloadDir,
-		ListenAddr:          cfg.TorrentAddr,
+		ListenHost:          cfg.TorrentAddr, // TODO: need fixed
 		UploadRateLimiter:   rate.NewLimiter(rate.Limit(uprate), uprate),
 		DownloadRateLimiter: rate.NewLimiter(rate.Limit(downrate), downrate),
 		Seed:                true,
@@ -612,12 +612,12 @@ func (l *Downloader) transferTorrent(ctx context.Context, t *Transfer) error {
 			if uploading {
 				// Unless it's unlimited, cancel when the target ratio is reached.
 				if target > 0 {
-					bw := t.Torrent.Stats().DataBytesWritten
+					bw := t.Torrent.Stats().BytesWrittenData
 					br := t.Torrent.Info().TotalLength()
 
 					var ratio float64
-					if bw > 0 && br > 0 {
-						ratio = float64(bw) / float64(br)
+					if bw.Int64() > 0 && br > 0 {
+						ratio = float64(bw.Int64()) / float64(br)
 					}
 
 					l.Config.Logger.Debugf("transfer is uploading written: %d read: %d ratio: %v >= target %v", bw, br, ratio, target)
@@ -896,7 +896,8 @@ func (t Transfer) TotalSeedSize() int64 {
 // UploadedBytes returns uploaded bytes.
 func (t Transfer) UploadedBytes() int64 {
 	if t.Torrent != nil {
-		return t.Torrent.Stats().DataBytesWritten
+
+		return t.Torrent.BytesCompleted() // TODO: 可能不对
 	}
 	return 0
 }

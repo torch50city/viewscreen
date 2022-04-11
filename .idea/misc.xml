@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectRootManager">
+    <output url="file://$PROJECT_DIR$/out" />
+  </component>
+  <component name="UnattendedHostPersistenceState">
+    <option name="openedFilesInfos">
+      <list>
+        <OpenedFileInfo>
+          <option name="caretOffset" value="538" />
+          <option name="fileUrl" value="file://$PROJECT_DIR$/main.go" />
+        </OpenedFileInfo>
+        <OpenedFileInfo>
+          <option name="caretOffset" value="86" />
+          <option name="fileUrl" value="file://$PROJECT_DIR$/friend.go" />
+        </OpenedFileInfo>
+        <OpenedFileInfo>
+          <option name="caretOffset" value="864" />
+          <option name="fileUrl" value="file://$PROJECT_DIR$/file.go" />
+        </OpenedFileInfo>
+        <OpenedFileInfo>
+          <option name="caretOffset" value="546" />
+          <option name="fileUrl" value="file://$PROJECT_DIR$/go.mod" />
+        </OpenedFileInfo>
+      </list>
+    </option>
+  </component>
+</project>

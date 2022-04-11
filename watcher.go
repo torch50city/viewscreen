@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/viewscreen/viewscreen/internal/downloader"
+	"github.com/torch50city/viewscreen/internal/downloader"
 )
 
 var ErrDownloadNotFound = errors.New("download not found")
